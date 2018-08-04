@@ -1,4 +1,3 @@
-console.log('Starting notes.js...');
 const fs = require('fs');
 
 const fetch = () => {    
@@ -24,6 +23,7 @@ const nonDuplicateNote = (title) =>{
 
 
 addNote = (title, body) => {
+    let notes = fetch();
     let note = {
         title,
         body
@@ -33,7 +33,6 @@ addNote = (title, body) => {
     if (dupNotes.length === 0) {
         notes.unshift(note);
         save(notes);
-        console.log(notes);
         return note;
     }    
 };
@@ -51,6 +50,7 @@ getNote = title => {
 };
 
 remNote = title => {
+    let notes = fetch();
     let nonDupNote = nonDuplicateNote(title);
     if( nonDupNote.length === notes.length){
         return false;

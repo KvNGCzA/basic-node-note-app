@@ -1,22 +1,63 @@
-console.log('Starting app.js...');
-
 const fs = require('fs');
 const _ = require('lodash');
 const yargs = require('yargs');
 
 const notes = require('./notes');
 
-const argv = yargs.argv;
+const title = {
+        describe: 'The title of your note',
+        demand: true,
+        alias: 't'
+    };
+const body = {
+        describe: 'The body of your note',
+        demand: true,
+        alias: 'b'
+    };
+const newTitle = {
+    describe: 'New title for note',
+    demand: true,
+    alias: 'n'
+};
+const argv = yargs.command('add', 'add a new note', {
+    title,
+    body    
+})
+.command('list', 'list all notes')
+.command('read','read a note',{
+    title
+})
+.command('remove', 'remove specific note',{
+    title
+})
+.command('update-body', 'update this notes content',{
+    title,
+    body
+})
+.command('update-title', 'update the title of a note', {
+    title,
+    newTitle
+})
+.help().argv;
 
 let cmd = argv._[0];
-console.log('Command: ',cmd);
-console.log('Yargs: ',argv);
+// console.log('Command: ',cmd);
+// console.log('Yargs: ',argv);
+
+disList = () => {
+    let disList = notes.getAll();
+    for (let x in disList) {
+        let num = parseInt(x) + 1;
+        console.log( num, `Title: ${disList[x].title}, Content: ${disList[x].body}`);
+    }
+};
 
 switch (cmd) {
     case 'add': 
     let note = notes.addNote(argv.title, argv.body);
        if( note ){
         console.log(`Note: ${note.title} saved successfully with Body: ${note.body}`);
+        disList();
        }
        else{
         console.log('Note already exists');
@@ -24,7 +65,8 @@ switch (cmd) {
     break;
     case 'list': 
         let list = notes.getAll();
-        console.log(list);
+        console.log('Printing',list.length,'notes');
+        disList();
     break;
     case 'read':
         let readNote = notes.getNote(argv.title);
@@ -43,7 +85,7 @@ switch (cmd) {
         }
         else{            
             console.log(`Note ${argv.title} removed`);
-            console.log(rNote);
+            disList();
         }
     break;
     case 'update-body':
@@ -56,6 +98,7 @@ switch (cmd) {
         }
         else{
             console.log(`${updateB.title}'s body has been updated to: '${updateB.body}'`);
+            disList();
         }
     break;
     case 'update-title':
@@ -68,6 +111,7 @@ switch (cmd) {
         }
         else{
             console.log(`Note ${argv.title}'s title has been updated to "${argv.newTitle}"`);
+            disList();
         }
     break;
     default:
